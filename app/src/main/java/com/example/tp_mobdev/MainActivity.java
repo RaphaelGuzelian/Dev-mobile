@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
                     {Manifest.permission.ACCESS_FINE_LOCATION};
             ActivityCompat.requestPermissions(this,
                     permissions,1);
+        } else {
+            initializeLocation();
         }
 
         myLocationListener = new LocationListener(){
@@ -50,16 +52,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProviderDisabled(String provider){}
         };
-
-        LocationManager manager = (LocationManager)
-                getSystemService(Context.LOCATION_SERVICE);
-        manager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER, 120, 100,
-                myLocationListener);
-        manager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER, 120, 100,
-                myLocationListener);
-
 
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
@@ -86,15 +78,28 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull final String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode,
-                permissions, grantResults);
-        if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            //on a la permission
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // La permission a été accordée
+                initializeLocation();
+            } else {
+                // L'utilisateur a refusé la permission
+                System.out.println("Permission refusée");
+            }
+        }
+    }
+
+    private void initializeLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // La permission a été accordée, nous pouvons initialiser la localisation
+            LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 120, 100, myLocationListener);
+            manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 120, 100, myLocationListener);
         } else {
-            //afficher un message d’erreur
-            System.out.println("Permission réfusée");
+            // La permission n'a pas été accordée, affichez un message d'erreur
+            System.out.println("Permission ACCESS_FINE_LOCATION non accordée");
         }
     }
 

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.tp_mobdev.databinding.MapFragmentBinding;
 
@@ -22,6 +23,9 @@ import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
+import java.util.List;
+import java.util.Random;
 
 public class MapFragment extends Fragment {
 
@@ -43,7 +47,7 @@ public class MapFragment extends Fragment {
         binding.mapView.setTileSource(TileSourceFactory.MAPNIK);
 
 //        Marker marker = new Marker(binding.mapView);
-//        marker.setPosition(new GeoPoint(45.75, 4.85)); // Utilisez votre propre position ici
+//        marker.setPosition(new GeoPoint(45.75, 4.85));
 //        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
 //        marker.setTitle("Start point");
 //        binding.mapView.getOverlays().add(marker);
@@ -64,6 +68,29 @@ public class MapFragment extends Fragment {
 
         binding.mapView.getController().setZoom(12.0);
 
+
+        FragmentManager fragmentManager = getFragmentManager();
+        Fragment pokedexFragment = fragmentManager.findFragmentByTag("PokedexFragment");
+
+//        if (pokedexFragment instanceof PokedexFragment) {
+//            System.out.println("OUI");
+//            List<Pokemon> pokemonList = ((PokedexFragment) getParentFragment()).getPokemonList();
+//            for (Pokemon pokemon : pokemonList) {
+//
+//                double latitude = getRandomLatitude();
+//                double longitude = getRandomLongitude();
+//
+//                Marker marker = new Marker(binding.mapView);
+//                marker.setPosition(new GeoPoint(latitude, longitude));
+//                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+//                marker.setTitle(pokemon.getName());
+//                binding.mapView.getOverlays().add(marker);
+//            }
+//        } else {
+//            System.out.println("NON");
+//        }
+
+
         return binding.getRoot();
     }
 
@@ -77,5 +104,21 @@ public class MapFragment extends Fragment {
     public void onPause() {
         super.onPause();
         binding.mapView.onPause();
+    }
+
+    public double getRandomLatitude() {
+        double minLatitude = 45.43;
+        double maxLatitude = 45.75;
+        Random random = new Random();
+        double latitude = minLatitude + (maxLatitude - minLatitude) * random.nextDouble();
+        return latitude;
+    }
+
+    public double getRandomLongitude() {
+        double minLongitude = 4.76;
+        double maxLongitude = 5.03;
+        Random random = new Random();
+        double longitude = minLongitude + (maxLongitude - minLongitude) * random.nextDouble();
+        return longitude;
     }
 }

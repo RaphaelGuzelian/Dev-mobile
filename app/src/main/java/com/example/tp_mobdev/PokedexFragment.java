@@ -1,6 +1,9 @@
 package com.example.tp_mobdev;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.room.Room;
 
 import com.example.tp_mobdev.databinding.PokedexFragmentBinding;
 
@@ -24,6 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PokedexFragment extends Fragment {
+    List<Pokemon> pokemonList = new ArrayList<>();
+    public boolean ajoutDansBaseDeDonnees = false;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -38,8 +45,8 @@ public class PokedexFragment extends Fragment {
         binding.pokemonList.setLayoutManager(new LinearLayoutManager(
                 binding.getRoot().getContext()));
 
-        List<Pokemon> pokemonList = new ArrayList<>();
-        creation(binding, pokemonList);
+
+        creation(requireContext(), binding, pokemonList);
         PokemonListAdapter adapter = new PokemonListAdapter(pokemonList);
         adapter.setOnClickOnNoteListener(listener); // On donne le listener à l'adapter
         binding.pokemonList.setAdapter(adapter);
@@ -47,7 +54,7 @@ public class PokedexFragment extends Fragment {
         return binding.getRoot(); // renvoie la view java
     }
 
-    public void creation(PokedexFragmentBinding binding, List<Pokemon> pokemonList) {
+    public void creation(Context context, PokedexFragmentBinding binding, List<Pokemon> pokemonList) {
         //Ouverture du fichier res/raw
         InputStreamReader isr = new InputStreamReader(getResources().openRawResource(R.raw.poke));
         BufferedReader reader = new BufferedReader(isr);
@@ -94,14 +101,31 @@ public class PokedexFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        if (Boolean.FALSE.equals(ajoutDansBaseDeDonnees)) {
+            System.out.print("Début lancement thread");
+            MyThreadEventListener listener = new MyThreadEventListener() {
+                @Override
+                public void onEventInMyThread(String data) {
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Le code que vous souhaitez exécuter après la fin de MyThread
+                        }
+                    });
+                }
+            };
+            MyThread thread = new MyThread(listener);
+            thread.start();
+            System.out.println("Fin lancement thread");
+            ajoutDansBaseDeDonnees = true;
+        }
+
     }
 
     public interface OnClickOnNoteListener {
         public void onClickOnNote(Pokemon pokemon);
     }
-
     private OnClickOnNoteListener listener;
-
     public void setOnClickOnNoteListener(OnClickOnNoteListener listener) {
         this.listener = listener;
     }

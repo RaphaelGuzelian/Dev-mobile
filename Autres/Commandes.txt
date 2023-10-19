@@ -1,0 +1,2 @@
+PS C:\Users\Rapha> cd .\AppData\Local\Android\Sdk\platform-tools\
+PS C:\Users\Rapha\AppData\Local\Android\Sdk\platform-tools> ./adb devices
